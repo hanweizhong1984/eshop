@@ -345,7 +345,7 @@ class Goods extends Common
                     return DataReturn('上传的文件的C' . $j . '单元格格式有错误，商品简述格式 最多160个字符，请修改文件后重新上传', -2);
                 }
                 $goods_info[$goodscount]['simple_desc'] = $good_simple_desc;
-                $good_model = $objPHPExcel->getActiveSheet()->getCell('D' . $j)->getValue(); //型号
+                $good_model = $objPHPExcel->getActiveSheet()->getCell('D' . $j)->getValue(); //型号1
                 if (is_object($good_model)) {
                     $good_model = $good_model->__toString();
                 }
