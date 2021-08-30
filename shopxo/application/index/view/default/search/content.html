@@ -1,0 +1,180 @@
+{{if !empty($data)}}
+    {{foreach $data as $v}}
+        <li class="am-animation-scale-up">
+            <div class="items am-padding-bottom-xs goods-detail" data-spec-detail-ajax-url="{{:MyUrl('index/goods/specdetail')}}" data-spec-type-ajax-url="{{:MyUrl('index/goods/spectype')}}">
+                <a href="{{$v.goods_url}}" target="_blank" class="am-block">
+                    <!-- 搜索页面商品信息顶部钩子 -->
+                    {{if isset($shopxo_is_develop) and $shopxo_is_develop eq true and (!isset($is_footer) or $is_footer eq 1)}}
+                        <div class="plugins-tag">
+                            <span>plugins_view_search_goods_inside_top</span>
+                        </div>
+                    {{/if}}
+                    {{php}}
+                        $hook_name = 'plugins_view_search_goods_inside_top';
+                        $hook_data = Hook::listen($hook_name, ['hook_name'=>$hook_name, 'is_backend'=>false, 'goods_id'=>$v['id'], 'goods'=>$v]);
+                        if(!empty($hook_data) && is_array($hook_data))
+                        {
+                            foreach($hook_data as $hook)
+                            {
+                                if(is_string($hook) || is_int($hook))
+                                {
+                                    echo htmlspecialchars_decode($hook);
+                                }
+                            }
+                        }
+                    {{/php}}
+
+                    <img src="{{$v.images}}" alt="{{$v.title}}" class="goods-images" />
+<!--                    <div class="am-padding-xs">-->
+<!--                        <p class="am-text-truncate-2 goods-title" title="{{$v.title}}">{{$v.title}}</p>-->
+<!--                    </div>-->
+                </a>
+                <p class="am-padding-horizontal-xs am-cf">
+<!--                    {{if isset($v['original_price']) and $v['original_price'] gt 0}}-->
+<!--                        <span class="am-fl original-price">{{$price_symbol}}{{$v.original_price}}</span>-->
+<!--                    {{/if}}-->
+                    <span>{{$v.title}}</span>
+                    <span class="am-fr sales-count">{{:lang('销量')}} {{$v.sales_count}}</span>
+                </p>
+
+                <!-- 搜索页面商品信息售价顶部钩子 -->
+                {{if isset($shopxo_is_develop) and $shopxo_is_develop eq true and (!isset($is_footer) or $is_footer eq 1)}}
+                    <div class="plugins-tag">
+                        <span>plugins_view_search_goods_inside_price_top</span>
+                    </div>
+                {{/if}}
+                {{php}}
+                    $hook_name = 'plugins_view_search_goods_inside_price_top';
+                    $hook_data = Hook::listen($hook_name, ['hook_name'=>$hook_name, 'is_backend'=>false, 'goods_id'=>$v['id'], 'goods'=>$v]);
+                    if(!empty($hook_data) && is_array($hook_data))
+                    {
+                        foreach($hook_data as $hook)
+                        {
+                            if(is_string($hook) || is_int($hook))
+                            {
+                                echo htmlspecialchars_decode($hook);
+                            }
+                        }
+                    }
+                {{/php}}
+
+                <p class="price am-padding-horizontal-xs am-text-truncate">
+                    <strong>{{$price_symbol}}{{$v.price}}</strong>
+                </p>
+
+                <!-- 规格选择，购买数量选择，加入购物车-->
+                <div class="quickbuy">
+                    <div class="theme-signin-left">
+                        {{if !empty($v['specifications']['choose'])}}
+                        {{foreach $v.specifications.choose as $key=>$spec}}
+                        {{if !empty($spec['value']) && $spec.name != '颜色'}}
+                        <div class="theme-options sku-items-{{$v['id']}}">
+<!--                            <ul>-->
+<!--                                <li class="sku-dont-choose">{{:lang($spec.name)}}</li>-->
+<!--                                {{foreach $spec.value as $keys=>$specs}}-->
+<!--                                    <li class="sku-line {{if isset($specs['is_only_level_one']) and isset($specs['inventory']) and $specs['inventory'] elt 0}} sku-items-disabled{{/if}}"-->
+<!--                                        data-type-value="{{$spec.name}}"-->
+<!--                                        data-value="{{$specs.name}}"-->
+<!--                                        data-id="{{$v['id']}}">-->
+<!--                                        {{$specs['name']}}<i></i>-->
+<!--                                    </li>-->
+<!--                                {{/foreach}}-->
+<!--                            </ul>-->
+                            <select name="size-{{$v['id']}}" data-id="{{$v['id']}}" class="am-radius chosen-select" data-placeholder="{{:lang('尺码')}}" data-validation-message="{{:lang('请选择尺码')}}">
+                                <option value=""></option>
+                                {{foreach $spec.value as $keys=>$specs}}
+                                <option value="" {{if isset($specs['inventory']) and $specs['inventory'] elt 0}}disabled{{/if}}>{{$specs.name}}</option>
+                                {{/foreach}}
+                            </select>
+                        </div>
+                        {{/if}}
+                        {{/foreach}}
+                        {{/if}}
+                        <div class="theme-options">
+                            <div class="cart-title number">{{:lang('数量')}}</div>
+                            <dd>
+                                <div class="am-input-group am-input-group-sm number-tag">
+                                    <button class="am-input-group-label min" data-id="{{$v['id']}}" type="button">-</button>
+                                    <input type="number" class="am-form-field" value="{{$v.buy_min_number}}" id="inputbox-{{$v['id']}}"
+                                           data-id="{{$v['id']}}" min="{{$v.buy_min_number}}" max="{{if empty($v['buy_max_number'])}}{{$v.inventory}}{{else /}}{{$v.buy_max_number}}{{/if}}"
+                                           data-original-max="{{$v.inventory}}" />
+                                    <button class="am-input-group-label add" data-id="{{$v['id']}}" type="button">+</button>
+                                </div>
+                                <span class="tb-hidden stock-tips">{{:lang('库存')}}
+                                        <span class="stock-{{$v['id']}}"
+                                              data-original-stock="{{$v.inventory}}"
+                                              data-min-limit="{{$v.buy_min_number}}"
+                                              data-max-limit="{{$v.buy_max_number}}"
+                                              data-unit="{{$v.inventory_unit}}">
+                                            {{$v.inventory}}
+                                        </span>{{:lang($v.inventory_unit)}}
+                                </span>
+                            </dd>
+                        </div>
+                        <!-- 购买导航 -->
+                        <div class="buy-nav {{if $common_site_type eq 1}}exhibition-nav{{/if}}">
+                            {{if !empty($v.is_shelves)}}
+                            {{if $v['inventory'] gt 0}}
+                            <div class="submit">
+                                <div class="clearfix tb-btn tb-btn-buy buy-event login-event buy-submit"
+                                     data-type="buy"
+                                     data-id="{{$v['id']}}"
+                                     onclick="CartAdd($(this))"
+                                     data-ajax-url="{{:MyUrl('index/buy/buynow')}}">
+                                    <button class="buynow" title="立即购买" href="javascript:;" type="button"><i></i>{{:lang('立即购买')}}</button>
+                                </div>
+                            </div>
+                            <div class="submit">
+                                <div class="clearfix tb-btn tb-btn-basket buy-event login-event cart-submit"
+                                     data-type="cart"
+                                     data-id="{{$v['id']}}"
+                                     onclick="CartAdd($(this))"
+                                     data-ajax-url="{{:MyUrl('index/Cart/Save')}}">
+                                    <button class="joincart" title="加入购物车" href="javascript:;" type="button"><i></i>{{:lang('加入购物车')}}</button>
+                                </div>
+                            </div>
+                            <!-- 购买表单 -->
+                            <form action="{{:MyUrl('index/buy/index')}}" method="post" class="buy-form">
+                                <input type="hidden" name="goods_id" value="" />
+                                <input type="hidden" name="buy_type" value="goods" />
+                                <input type="hidden" name="stock" value="1" />
+                                <input type="hidden" name="spec" value="" />
+                                <button style="visibility: hidden;" type="submit"></button>
+                            </form>
+                            {{else /}}
+                            <p class="goods-not-buy-tips">{{:lang('商品卖光了')}}</p>
+                            {{/if}}
+                            {{/if}}
+                            {{if $v.is_shelves neq 1}}
+                            <p class="goods-not-buy-tips">{{:lang('商品已下架')}}</p>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                <!-- 规格选择，购买数量选择，加入购物车 -->
+
+
+                <!-- 搜索页面商品信息底部钩子 -->
+                {{if isset($shopxo_is_develop) and $shopxo_is_develop eq true and (!isset($is_footer) or $is_footer eq 1)}}
+                    <div class="plugins-tag">
+                        <span>plugins_view_search_goods_inside_bottom</span>
+                    </div>
+                {{/if}}
+                {{php}}
+                    $hook_name = 'plugins_view_search_goods_inside_bottom';
+                    $hook_data = Hook::listen($hook_name, ['hook_name'=>$hook_name, 'is_backend'=>false, 'goods_id'=>$v['id'], 'goods'=>$v]);
+                    if(!empty($hook_data) && is_array($hook_data))
+                    {
+                        foreach($hook_data as $hook)
+                        {
+                            if(is_string($hook) || is_int($hook))
+                            {
+                                echo htmlspecialchars_decode($hook);
+                            }
+                        }
+                    }
+                {{/php}}
+            </div>
+        </li>
+    {{/foreach}}
+{{/if}}

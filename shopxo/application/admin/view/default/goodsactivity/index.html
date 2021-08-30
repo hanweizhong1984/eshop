@@ -1,0 +1,91 @@
+{{include file="public/header" /}}
+
+<!-- right content start  -->
+<div class="content-right">
+    <div class="content">
+        <!-- operation start -->
+        <div class="am-g">
+            <button class="am-btn am-btn-secondary am-radius am-btn-xs am-icon-plus submit-add" data-am-modal="{target: '#data-save-win'}"> 新增</button>
+        </div>
+        <!-- operation end -->
+
+        <!-- list start -->
+        <div class="am-scrollable-horizontal am-table-scrollable-horizontal am-margin-top-sm am-margin-bottom-sm">
+            <table class="am-table am-table-striped am-table-hover am-table-bordered am-text-nowrap am-table-td-fixed-last">
+                <thead>
+                <tr>
+                    <th class="am-grid-sm">编号</th>
+                    <th class="am-grid-sm">活动名称</th>
+                    <th class="am-grid-sm">描述</th>
+                    <th class="am-text-center">状态</th>
+                    <th class="am-text-center" data-width="170">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{if !empty($data_list)}}
+                {{foreach $data_list as $v}}
+                <tr id="data-list-{{$v.id}}" {{if $v['is_enable'] eq 0}} class="am-active"{{/if}}>
+                <td class="am-text-middle am-nowrap-initial">{{$v.id}}</td>
+                <td class="am-text-middle am-nowrap-initial">{{$v.name}}</td>
+                <td class="am-text-middle am-nowrap-initial">{{$v.describe}}</td>
+                <td class="am-text-middle am-text-center">
+                    <a class="am-icon-btn am-icon-check {{if $v['is_enable'] eq 1}}am-success{{else /}}am-default{{/if}}" style="font-size: 16px; width: 25px; height: 25px; line-height: 25px;"></a>
+                </td>
+                <td class="am-operate-grid" data-width="170">
+                    <div class="am-scrollable-vertical">
+                        <button class="am-btn am-btn-secondary am-btn-xs am-radius submit-edit" data-am-modal="{target: '#data-save-win'}" data-json='{{:json_encode($v)}}'>
+                            <i class="am-icon-edit"></i>
+                            <span>编辑</span>
+                        </button>
+                        <button class="am-btn am-btn-danger am-btn-xs am-radius submit-delete" data-url="{{:MyUrl('admin/goodsactivity/delete')}}" data-id="{{$v.id}}">
+                            <i class="am-icon-trash-o"></i>
+                            <span>删除</span>
+                        </button>
+                    </div>
+                </td>
+                </tr>
+                {{/foreach}}
+                {{/if}}
+                </tbody>
+            </table>
+            {{if empty($data_list)}}
+            <div class="table-no"><i class="am-icon-warning"></i> 没有相关数据</div>
+            {{/if}}
+        </div>
+        <!-- list end -->
+
+        <!-- save win start -->
+        <div class="am-popup am-radius" id="data-save-win">
+            <div class="am-popup-inner">
+                <div class="am-popup-hd">
+                    <h4 class="am-popup-title" data-add-title="商品活动添加" data-edit-title="商品活动编辑">商品活动添加</h4>
+                    <span data-am-modal-close class="am-close">&times;</span>
+                </div>
+                <div class="am-popup-bd">
+                    <!-- form start -->
+                    <form class="am-form form-validation" action="{{:MyUrl('admin/goodsactivity/Save')}}" method="POST" request-type="ajax-reload" request-value="">
+                        <div class="am-form-group">
+                            <label>名称</label>
+                            <input type="text" placeholder="名称" name="name" minlength="2" maxlength="16" data-validation-message="名称格式 2~16 个字符" class="am-radius" required />
+                        </div>
+                        <div class="am-form-group am-form-success">
+                            <label>描述</label>
+                            <textarea rows="3" maxlength="60" name="describe" class="am-radius" placeholder="描述" data-validation-message="描述不能大于60个字符"></textarea>
+                        </div>
+                        <div class="am-form-group am-form-group-refreshing">
+                            <input type="hidden" name="id" />
+                            <button type="submit" class="am-btn am-btn-primary am-radius btn-loading-example am-btn-sm am-btn-block" data-am-loading="{loadingText:'处理中...'}">保存</button>
+                        </div>
+                    </form>
+                    <!-- form end -->
+                </div>
+            </div>
+        </div>
+        <!-- save win end -->
+    </div>
+</div>
+<!-- right content end  -->
+
+<!-- footer start -->
+{{include file="public/footer" /}}
+<!-- footer end -->

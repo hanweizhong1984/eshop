@@ -1,0 +1,2 @@
+ldapSrv:210.13.114.202
+dn:ou=rnd,dc=wicresoft,dc=com
